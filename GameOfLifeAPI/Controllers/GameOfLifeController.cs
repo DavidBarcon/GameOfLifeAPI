@@ -1,6 +1,7 @@
 ﻿using GameOfLifeAPI.Models;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using System.Net;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -20,17 +21,31 @@ namespace GameOfLifeAPI.Controllers
             return gameOfLife.ToString();
         }*/
 
-        
+
 
         // POST api/gameoflife
-        [HttpPost]
-        public IActionResult initializeBoard([FromBody] bool[][] values)
-        {
 
+        /// <summary>
+        /// Generate a game of life isntance from a 2D bool array and calculate the next generation.
+        /// </summary>
+        [HttpPost]
+        [Consumes("application/json")]
+        [ProducesResponseType(typeof(bool[][]), (int)HttpStatusCode.OK)]
+        
+        public IActionResult post([FromBody] bool[][] values)
+        {
+            bool[,] values2d;
             if (values == null) return BadRequest("Bad request: input is null");
 
-            //convert from bool[][] to bool[,]
-            bool[,] values2d = stageredTo2d(values);
+            try
+            {
+                //convert from bool[][] to bool[,]
+                values2d = stageredTo2d(values);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest("Bad request: input is in the wrong format");
+            }
 
             gameOfLife = new GameOfLife(values2d);
 
