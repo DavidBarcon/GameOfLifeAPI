@@ -4,7 +4,6 @@ namespace GameOfLifeAPI.Models
 {
     public class GameOfLife
     {
-        public long Id { get; set; }
 
         private Board board;
         public GameOfLife(bool[,] values)
