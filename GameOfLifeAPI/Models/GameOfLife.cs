@@ -22,11 +22,6 @@ namespace GameOfLifeAPI.Models
 
         }
 
-        /*public override string ToString()
-        {
-            return board.ToString();
-        }*/
-
     }
 
 

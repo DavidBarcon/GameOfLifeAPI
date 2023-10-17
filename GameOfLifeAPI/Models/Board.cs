@@ -146,16 +146,5 @@
             return res;
         }
 
-        /*public override string ToString()
-        {
-            string res = string.Empty; 
-            foreach(Cell cell in board)
-            {
-                res += cell.isAlive + " ";
-            }
-
-            return res;
-        }*/
-
     }
 }

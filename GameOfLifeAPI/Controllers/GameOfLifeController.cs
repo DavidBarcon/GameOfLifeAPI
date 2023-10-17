@@ -13,25 +13,13 @@ namespace GameOfLifeAPI.Controllers
     {
         GameOfLife gameOfLife;
 
-        /*// GET: api/<GameOfLifeController>
-        [HttpGet]
-        public string Get()
-        {
-            if (gameOfLife == null) return "Not initialized";
-            return gameOfLife.ToString();
-        }*/
-
-
-
-        // POST api/gameoflife
-
         /// <summary>
-        /// Generate a game of life isntance from a 2D bool array and calculate the next generation.
+        /// Generate a game of life instance from a 2D bool array and calculate the next generation.
         /// </summary>
+        
         [HttpPost]
         [Consumes("application/json")]
         [ProducesResponseType(typeof(bool[][]), (int)HttpStatusCode.OK)]
-        
         public IActionResult post([FromBody] bool[][] values)
         {
             bool[,] values2d;
@@ -52,19 +40,6 @@ namespace GameOfLifeAPI.Controllers
             gameOfLife.next();
             return Ok();
         }
-
-        /*// PUT api/gameoflife
-        [HttpPut]
-        public IActionResult updateBoard()
-        {
-            if(gameOfLife == null)
-            {
-                return BadRequest("Bad request: Not initialized");
-            }
-
-            gameOfLife.next();
-            return Ok();
-        }*/
 
         private bool[,] stageredTo2d(bool[][] values)
         {
