@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using NuGet.Protocol;
 using System.IO;
 using System.Net;
 
@@ -18,15 +19,23 @@ namespace GameOfLifeAPI.Controllers
         /// <summary>
         /// update the saved instance of the board
         /// </summary>
+
+        //"api/gameoflife"
         [HttpPut]
         public ActionResult updateBoard() {
             bool[][] board = readFile();
             if (board == null) return BadRequest("Bad Request: File was not initialized");
 
+            Console.WriteLine(board.ToJson());
+            Console.WriteLine(jaggedTo2d(board).ToJson());
+
             GameOfLife gameOfLife = new GameOfLife(jaggedTo2d(board));
+
+            Console.WriteLine(gameOfLife.ToArray().ToJson());
+
             gameOfLife.next();
 
-            string json = JsonConvert.SerializeObject(gameOfLife.ToArray());
+            string json = gameOfLife.ToArray().ToJson();
             System.IO.File.WriteAllText(@"c:\dotNetKataGoL\GameOfLifeAPI\Data.json", json);
             return Ok();
 
@@ -36,6 +45,7 @@ namespace GameOfLifeAPI.Controllers
         /// Initialize board with an array
         /// </summary>
         
+        //"api/gameoflife"
         [HttpPost]
         [Consumes("application/json")]
         [ProducesResponseType(typeof(bool[][]), (int)HttpStatusCode.OK)]
@@ -45,15 +55,6 @@ namespace GameOfLifeAPI.Controllers
 
             writeFile(values);
 
-            return Ok();
-        }
-
-        /// <summary>
-        /// Deletes the current board
-        /// </summary>
-        [HttpDelete]
-        public ActionResult deleteBoard() {
-            System.IO.File.WriteAllText(@"c:\dotNetKataGoL\GameOfLifeAPI\Data.json", String.Empty);
             return Ok();
         }
 
@@ -76,6 +77,7 @@ namespace GameOfLifeAPI.Controllers
         }
         private bool[][] readFile() {
             string json = System.IO.File.ReadAllText(@"c:\dotNetKataGoL\GameOfLifeAPI\Data.json");
+
             if (json.Length == 0) return null; 
             bool[][] board = JsonConvert.DeserializeObject<bool[][]>(json);
 

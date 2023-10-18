@@ -11,11 +11,12 @@
         Stack<int[]> StackOff = new Stack<int[]>();
 
         //initialize the board with a 2d array
-        public Board(bool[,] bools)
+        public Board(bool[,] values)
         {
-            initialize(bools);
-            sizeX = bools.GetLength(0);
-            sizeY = bools.GetLength(1);
+            initialize(values);
+            sizeX = values.GetLength(0);
+            sizeY = values.GetLength(1);
+
         }
 
 
@@ -25,16 +26,13 @@
         {
             foreach (var cell in board)
             {
-                if (cell.x == 0 ||
-                   cell.y == 0 ||
-                   cell.x == sizeX - 1 ||
-                   cell.y == sizeY - 1)
+                if (isBorder(cell))
                 {
                     continue;
                 }
                 else
                 {
-                    if (cell.isAlive)
+                    if (cell.getState() == states.alive)
                     {
                         underpopulation(cell);
                         overpopulation(cell);
@@ -55,7 +53,14 @@
 
             foreach (var cell in board)
             {
-                values[cell.x, cell.y] = cell.isAlive;
+                if (cell.getState() == states.alive)
+                {
+                    values[cell.getPosition()[0], cell.getPosition()[1]] = true;
+                }
+                else
+                {
+                    values[cell.getPosition()[0], cell.getPosition()[1]] = false;
+                } 
             }
 
             return values;
@@ -70,7 +75,15 @@
             {
                 for (int y = 0; y < bools.GetLength(1); y++)
                 {
-                    board.Add(new Cell(bools[x, y], x, y));
+                    if (bools[x, y] == true)
+                    {
+                        board.Add(new Cell(states.alive, new int[] { x, y }));
+                    }
+                    else
+                    {
+                        board.Add(new Cell(states.dead, new int[] { x, y }));
+                    }
+
                 }
             }
         }
@@ -83,26 +96,42 @@
 
         }
 
+        private bool isBorder(Cell cell)
+        {
+            int x = cell.getPosition()[0];
+            int y = cell.getPosition()[1];
+
+            if (x == 0 || y == 0 ||
+                x == sizeX - 1 || y == sizeY - 1)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
         //applies every queued change
         private void updateBoard()
         {
             while (StackOff.Count > 0)
             {
                 int[] item = StackOff.Pop();
-                findCell(item[0], item[1]).isAlive = false;
+                findCell(item).dead();
             }
 
             while (StackOn.Count > 0)
             {
                 int[] item = StackOn.Pop();
-                findCell(item[0], item[1]).isAlive = true;
+                findCell(item).alive();
             }
         }
 
-        private Cell findCell(int x, int y)
+        private Cell findCell(int[] pos)
         {
             return board.Find(cell =>
-                cell.x == x && cell.y == y
+                cell.getPosition().SequenceEqual(pos)
             );
         }
 
@@ -113,7 +142,7 @@
             int numberOfAdjacent = countAdjacent(cell);
             if (numberOfAdjacent == 3)
             {
-                StackOn.Push(new[] { cell.x, cell.y });
+                StackOn.Push(cell.getPosition());
             }
         }
 
@@ -124,7 +153,7 @@
             int numberOfAdjacent = countAdjacent(cell);
             if (numberOfAdjacent < 2)
             {
-                StackOff.Push(new[] { cell.x, cell.y });
+                StackOff.Push(cell.getPosition());
             }
         }
 
@@ -135,7 +164,7 @@
             int numberOfAdjacent = countAdjacent(cell);
             if (numberOfAdjacent > 3)
             {
-                StackOff.Push(new[] { cell.x, cell.y });
+                StackOff.Push(cell.getPosition());
             }
         }
 
@@ -144,17 +173,20 @@
         private int countAdjacent(Cell cell)
         {
             int res = 0;
+            int x = cell.getPosition()[0];
+            int y = cell.getPosition()[1];
 
-            if (findCell(cell.x - 1, cell.y - 1).isAlive) res++;
-            if (findCell(cell.x - 1, cell.y).isAlive) res++;
-            if (findCell(cell.x - 1, cell.y + 1).isAlive) res++;
 
-            if (findCell(cell.x + 1, cell.y - 1).isAlive) res++;
-            if (findCell(cell.x + 1, cell.y).isAlive) res++;
-            if (findCell(cell.x + 1, cell.y + 1).isAlive) res++;
+            if (findCell(new int[] { x - 1, y - 1 }).getState() == states.alive) res++;
+            if (findCell(new int[] { x - 1, y }).getState() == states.alive) res++;
+            if (findCell(new int[] { x - 1, y + 1 }).getState() == states.alive) res++;
 
-            if (findCell(cell.x, cell.y - 1).isAlive) res++;
-            if (findCell(cell.x, cell.y + 1).isAlive) res++;
+            if (findCell(new int[] { x + 1, y - 1 }).getState() == states.alive) res++;
+            if (findCell(new int[] { x + 1, y }).getState() == states.alive) res++;
+            if (findCell(new int[] { x + 1, y + 1 }).getState() == states.alive) res++;
+
+            if (findCell(new int[] { x, y - 1 }).getState() == states.alive) res++;
+            if (findCell(new int[] { x, y + 1 }).getState() == states.alive) res++;
 
             return res;
         }
