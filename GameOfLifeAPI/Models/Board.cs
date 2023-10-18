@@ -48,6 +48,19 @@
             updateBoard();
         }
 
+        public bool[,] ToArray()
+        {
+            bool[,] values = new bool[sizeX, sizeY];
+
+
+            foreach (var cell in board)
+            {
+                values[cell.x, cell.y] = cell.isAlive;
+            }
+
+            return values;
+        }
+
         //initialize board with a 2d bool array
         private void initialize(bool[,] bools)
         {
