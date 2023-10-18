@@ -22,6 +22,11 @@ namespace GameOfLifeAPI.Models
 
         }
 
+        public bool[,] ToArray()
+        {
+            return board.ToArray();
+        }
+
     }
 
 
