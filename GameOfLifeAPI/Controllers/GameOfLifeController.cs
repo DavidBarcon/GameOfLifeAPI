@@ -1,12 +1,8 @@
 ﻿using GameOfLifeAPI.Models;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using NuGet.Protocol;
-using System.IO;
 using System.Net;
-
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace GameOfLifeAPI.Controllers
 {
@@ -14,10 +10,8 @@ namespace GameOfLifeAPI.Controllers
     [ApiController]
     public class GameOfLifeController : ControllerBase
     {
-        GameOfLife gameOfLife;
-
         /// <summary>
-        /// update the saved instance of the board
+        /// Update the saved instance of the board
         /// </summary>
 
         //"api/gameoflife"
@@ -26,12 +20,7 @@ namespace GameOfLifeAPI.Controllers
             bool[][] board = readFile();
             if (board == null) return BadRequest("Bad Request: File was not initialized");
 
-            Console.WriteLine(board.ToJson());
-            Console.WriteLine(jaggedTo2d(board).ToJson());
-
             GameOfLife gameOfLife = new GameOfLife(jaggedTo2d(board));
-
-            Console.WriteLine(gameOfLife.ToArray().ToJson());
 
             gameOfLife.next();
 
@@ -58,6 +47,8 @@ namespace GameOfLifeAPI.Controllers
             return Ok();
         }
 
+        //method that converts and array in the form of <T>[][] to <T>[,]
+        //this is because GameOfLife constructor only accepts arrays in that form
         private bool[,] jaggedTo2d(bool[][] values)
         {
             bool[,] values2d = new bool[values.Length, values[0].Length];
@@ -71,6 +62,7 @@ namespace GameOfLifeAPI.Controllers
             return values2d;
         }
 
+        //Methods for persistance. They read and write from a local .json file
         private void writeFile(bool[][] values) {
             string json = JsonConvert.SerializeObject(values);
             System.IO.File.WriteAllText(@"c:\dotNetKataGoL\GameOfLifeAPI\Data.json", json);
