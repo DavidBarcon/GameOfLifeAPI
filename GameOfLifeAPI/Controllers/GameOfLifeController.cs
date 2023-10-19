@@ -10,6 +10,8 @@ namespace GameOfLifeAPI.Controllers
     [ApiController]
     public class GameOfLifeController : ControllerBase
     {
+
+        public GameOfLifeController() { }
         /// <summary>
         /// Update the saved instance of the board
         /// </summary>
