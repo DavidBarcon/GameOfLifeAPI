@@ -1,14 +1,14 @@
-﻿using Humanizer;
-
-namespace GameOfLifeAPI.Models
+﻿namespace GameOfLifeKata.Business
 {
     public class GameOfLife
     {
 
         private Board board;
-        public GameOfLife(bool[,] values)
+        private readonly BoardRepository boardRepository;
+
+        public GameOfLife(BoardRepository boardRepository)
         {
-            
+            this.boardRepository = boardRepository;
         }
 
         public void next()
@@ -18,7 +18,7 @@ namespace GameOfLifeAPI.Models
 
         public bool Equals(GameOfLife game)
         {
-            return game.board.Equals(this.board);
+            return game.board.Equals(board);
 
         }
 
@@ -29,7 +29,8 @@ namespace GameOfLifeAPI.Models
 
         public void NewGame(bool[,] values)
         {
-            this.board = new Board(values);
+            board = new Board(values);
+            boardRepository.Save(board);
         }
     }
 
