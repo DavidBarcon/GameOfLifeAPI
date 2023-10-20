@@ -1,5 +1,4 @@
-﻿using GameOfLifeAPI.Models;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using NuGet.Protocol;
 using System.Net;
@@ -24,6 +23,7 @@ namespace GameOfLifeAPI.Controllers
 
             GameOfLife gameOfLife = new GameOfLife(jaggedTo2d(board));
 
+            gameOfLife.Board = board;
             gameOfLife.next();
 
             string json = gameOfLife.ToArray().ToJson();
@@ -62,20 +62,6 @@ namespace GameOfLifeAPI.Controllers
                 }
             }
             return values2d;
-        }
-
-        //Methods for persistance. They read and write from a local .json file
-        private void writeFile(bool[][] values) {
-            string json = JsonConvert.SerializeObject(values);
-            System.IO.File.WriteAllText(@"c:\dotNetKataGoL\GameOfLifeAPI\Data.json", json);
-        }
-        private bool[][] readFile() {
-            string json = System.IO.File.ReadAllText(@"c:\dotNetKataGoL\GameOfLifeAPI\Data.json");
-
-            if (json.Length == 0) return null; 
-            bool[][] board = JsonConvert.DeserializeObject<bool[][]>(json);
-
-            return board;
         }
     }
 }

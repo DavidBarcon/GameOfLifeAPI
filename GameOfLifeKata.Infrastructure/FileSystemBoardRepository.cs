@@ -1,5 +1,5 @@
 ﻿using GameOfLifeKata.Business;
-
+using Newtonsoft.Json;
 
 namespace GameOfLifeKata.Infrastructure
 {
@@ -17,10 +17,18 @@ namespace GameOfLifeKata.Infrastructure
 
             BoardDTO boardDTO = board.toDTO();
             string json = System.Text.Json.JsonSerializer.Serialize(boardDTO); 
+            
             System.IO.File.WriteAllText(path, json);
 
-
         }
+
+        public Board Load()
+        {
+            
+
+            return;
+        }
+
     }
 
     public class BoardDTO
