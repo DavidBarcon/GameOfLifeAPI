@@ -1,6 +1,3 @@
-using GameOfLifeAPI.Models;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
 using Microsoft.Extensions.PlatformAbstractions;
 using System.Reflection;
 
