@@ -16,7 +16,7 @@ namespace GameOfLifeKata.Infrastructure
         {
 
             BoardDTO boardDTO = board.toDTO();
-            string json = System.Text.Json.JsonSerializer.Serialize(boardDTO); 
+            string json = JsonConvert.SerializeObject(boardDTO);
             
             System.IO.File.WriteAllText(path, json);
 
@@ -24,9 +24,10 @@ namespace GameOfLifeKata.Infrastructure
 
         public Board Load()
         {
-            
+            string json = System.IO.File.ReadAllText(path);
+            BoardDTO boardDTO = JsonConvert.DeserializeObject<BoardDTO>(json);
 
-            return;
+            return boardDTO.toBoard();
         }
 
     }
@@ -62,6 +63,28 @@ namespace GameOfLifeKata.Infrastructure
             return new BoardDTO() { Cells = cells };
 
 
+        }
+
+        public static Board toBoard(this BoardDTO boardDTO) {
+            IEnumerable<CellDTO> cells = boardDTO.Cells;
+           
+            int maxX=0, maxY=0;
+            foreach(CellDTO cell in cells) { 
+                if(cell.x > maxX) maxX = cell.x;
+                if(cell.y > maxY) maxY = cell.y;
+            }
+
+            bool[,] values = new bool[maxX+1,maxY+1];
+            foreach (CellDTO cell in cells)
+            {
+                int x = cell.x;
+                int y = cell.y;
+                bool state = cell.State;
+
+                values[x,y] = state;
+            }
+
+            return new Board(values);
         }
     }
 }

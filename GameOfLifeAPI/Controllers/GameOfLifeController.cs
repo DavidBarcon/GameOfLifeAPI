@@ -10,7 +10,10 @@ namespace GameOfLifeAPI.Controllers
     public class GameOfLifeController : ControllerBase
     {
 
-        public GameOfLifeController() { }
+        public GameOfLifeController() { 
+            
+        }
+        /*
         /// <summary>
         /// Update the saved instance of the board
         /// </summary>
@@ -47,7 +50,7 @@ namespace GameOfLifeAPI.Controllers
             writeFile(values);
 
             return Ok();
-        }
+        }*/
 
         //method that converts and array in the form of <T>[][] to <T>[,]
         //this is because GameOfLife constructor only accepts arrays in that form
