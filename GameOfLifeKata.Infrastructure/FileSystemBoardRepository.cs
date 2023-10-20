@@ -12,6 +12,14 @@ namespace GameOfLifeKata.Infrastructure
             this.path = path;
         }
 
+        public Board Load()
+        {
+            string json = System.IO.File.ReadAllText(path);
+            BoardDTO boardDTO = JsonConvert.DeserializeObject<BoardDTO>(json);
+
+            return boardDTO.toBoard();
+        }
+
         public void Save(Board board)
         {
 
@@ -20,14 +28,6 @@ namespace GameOfLifeKata.Infrastructure
             
             System.IO.File.WriteAllText(path, json);
 
-        }
-
-        public Board Load()
-        {
-            string json = System.IO.File.ReadAllText(path);
-            BoardDTO boardDTO = JsonConvert.DeserializeObject<BoardDTO>(json);
-
-            return boardDTO.toBoard();
         }
 
     }

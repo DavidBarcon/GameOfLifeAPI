@@ -2,36 +2,27 @@
 using Newtonsoft.Json;
 using NuGet.Protocol;
 using System.Net;
+using GameOfLifeKata.Business;
 
-namespace GameOfLifeAPI.Controllers
+namespace GameOfLifeKata.API.Controllers
 {
     [Route("api/gameoflife")]
     [ApiController]
     public class GameOfLifeController : ControllerBase
     {
-
-        public GameOfLifeController() { 
-            
+        private GameOfLife gameOfLife;
+        public GameOfLifeController(GameOfLife gameOfLife)
+        {
+            this.gameOfLife = gameOfLife;
         }
-        /*
+        
         /// <summary>
         /// Update the saved instance of the board
         /// </summary>
 
         //"api/gameoflife"
         [HttpPut]
-        public ActionResult updateBoard() {
-            bool[][] board = readFile();
-            if (board == null) return BadRequest("Bad Request: File was not initialized");
-
-            GameOfLife gameOfLife = new GameOfLife(jaggedTo2d(board));
-
-            gameOfLife.Board = board;
-            gameOfLife.next();
-
-            string json = gameOfLife.ToArray().ToJson();
-            System.IO.File.WriteAllText(@"c:\dotNetKataGoL\GameOfLifeAPI\Data.json", json);
-            return Ok();
+        public ActionResult Put() {
 
         }
 
@@ -43,15 +34,11 @@ namespace GameOfLifeAPI.Controllers
         [HttpPost]
         [Consumes("application/json")]
         [ProducesResponseType(typeof(bool[][]), (int)HttpStatusCode.OK)]
-        public ActionResult initializeBoard([FromBody] bool[][] values)
+        public ActionResult Post([FromBody] bool[][] values)
         {
-            if (values == null) return BadRequest("Bad request: input is null");
 
-            writeFile(values);
-
-            return Ok();
-        }*/
-
+        }
+        /*
         //method that converts and array in the form of <T>[][] to <T>[,]
         //this is because GameOfLife constructor only accepts arrays in that form
         private bool[,] jaggedTo2d(bool[][] values)
@@ -65,6 +52,6 @@ namespace GameOfLifeAPI.Controllers
                 }
             }
             return values2d;
-        }
+        }*/
     }
 }

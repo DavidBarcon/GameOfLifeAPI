@@ -13,6 +13,7 @@
 
         public void next()
         {
+            this.board = boardRepository.Load();
             board.next();
             boardRepository.Save(board);
         }

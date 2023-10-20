@@ -21,6 +21,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\GameOfLife.Business\GameOfLifeKata.Business.csproj" />
+    <ProjectReference Include="..\GameOfLifeAPI\GameOfLifeKata.API.csproj" />
     <ProjectReference Include="..\GameOfLifeKata.Infrastructure\GameOfLifeKata.Infrastructure.csproj" />
   </ItemGroup>
 

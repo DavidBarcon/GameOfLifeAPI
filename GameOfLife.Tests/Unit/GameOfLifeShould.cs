@@ -2,6 +2,8 @@ using NUnit.Framework;
 using GameOfLifeKata.Business;
 using FluentAssertions;
 using NSubstitute;
+using GameOfLifeKata.Infrastructure;
+using Newtonsoft.Json.Linq;
 
 namespace GameOfLifeKata.Tests.Unit
 {
@@ -15,6 +17,7 @@ namespace GameOfLifeKata.Tests.Unit
         public void SetUp()
         {
             boardRepository = Substitute.For<BoardRepository>();
+
             gameOfLife = new GameOfLife(boardRepository);
 
         }
@@ -41,6 +44,7 @@ namespace GameOfLifeKata.Tests.Unit
 
 
             gameOfLife.NewGame(board);
+            boardRepository.Load().Returns(new Board(board));
             gameOfLife.next();
 
             GameOfLife expected = new GameOfLife(boardRepository);
@@ -69,6 +73,7 @@ namespace GameOfLifeKata.Tests.Unit
 
 
             gameOfLife.NewGame(board);
+            boardRepository.Load().Returns(new Board(board));
             gameOfLife.next();
 
             GameOfLife expected = new GameOfLife(boardRepository);
@@ -103,6 +108,7 @@ namespace GameOfLifeKata.Tests.Unit
 
 
             gameOfLife.NewGame(board);
+            boardRepository.Load().Returns(new Board(board));
             gameOfLife.next();
 
             GameOfLife expected = new GameOfLife(boardRepository);
@@ -133,6 +139,7 @@ namespace GameOfLifeKata.Tests.Unit
 
 
             gameOfLife.NewGame(board);
+            boardRepository.Load().Returns(new Board(board));
             gameOfLife.next();
 
             GameOfLife expected = new GameOfLife(boardRepository);
@@ -189,6 +196,7 @@ namespace GameOfLifeKata.Tests.Unit
             };
 
             gameOfLife.NewGame(values);
+            boardRepository.Load().Returns(new Board(values));
             gameOfLife.next();
 
             boardRepository.Received(2).Save(Arg.Is<Board>(board => board.Equals(new Board(values))));
@@ -206,6 +214,7 @@ namespace GameOfLifeKata.Tests.Unit
             };
 
             gameOfLife.NewGame(values);
+            boardRepository.Load().Returns(new Board(values));
             gameOfLife.next();
 
             boardRepository.Received(1).Load();
