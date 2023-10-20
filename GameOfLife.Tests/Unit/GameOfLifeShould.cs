@@ -193,5 +193,22 @@ namespace GameOfLifeKata.Tests.Unit
 
             boardRepository.Received(2).Save(Arg.Is<Board>(board => board.Equals(new Board(values))));
         }
+
+        [Test]
+        public void load_the_next_game()
+        {
+            bool[,] values =
+            {
+                { false, false, false, false},
+                { false, true, true, false},
+                { false, true, true, false},
+                { false, false, false, false},
+            };
+
+            gameOfLife.NewGame(values);
+            gameOfLife.next();
+
+            boardRepository.Received(1).Load();
+        }
     }
 }
