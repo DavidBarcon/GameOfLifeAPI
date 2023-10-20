@@ -14,6 +14,7 @@
         public void next()
         {
             board.next();
+            boardRepository.Save(board);
         }
 
         public bool Equals(GameOfLife game)
