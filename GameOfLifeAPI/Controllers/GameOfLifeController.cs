@@ -25,7 +25,8 @@ namespace GameOfLifeKata.API.Controllers
         [HttpPut]
         public ActionResult Put()
         {
-            return null;
+            _gameOfLife.next();
+            return Ok();
         }
 
         /// <summary>
