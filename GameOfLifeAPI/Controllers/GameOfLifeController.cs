@@ -23,6 +23,7 @@ namespace GameOfLifeKata.API.Controllers
 
         //"api/gameoflife"
         [HttpPut]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         public ActionResult Put()
         {
             _gameOfLife.next();

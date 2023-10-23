@@ -1,20 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using FluentAssertions;
+﻿using FluentAssertions;
 using GameOfLifeKata.API.Controllers;
 using GameOfLifeKata.Business;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
-using Newtonsoft.Json.Linq;
 using NSubstitute;
-using NSubstitute.ReceivedExtensions;
 using NUnit.Framework;
-using NUnit.Framework.Api;
 
 namespace GameOfLifeKata.Tests.Unit
 {
