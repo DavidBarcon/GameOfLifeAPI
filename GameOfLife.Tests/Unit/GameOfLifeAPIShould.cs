@@ -70,5 +70,25 @@ namespace GameOfLifeKata.Tests.Unit
             result.Should().BeOfType<OkResult>();
 
         }
+
+        [Test]
+        public void trow_Expection_when_put_is_called_with_null_repository()
+        {
+            bool[,] values2d = null;
+            
+
+            ActionResult result;
+
+            try
+            {
+                boardRepository.Load().Returns(new Board(values2d));
+                result = controller.Put();
+            }
+            catch (Exception ex)
+            {
+                Assert.Pass();
+            }
+
+        }
     }
 }
