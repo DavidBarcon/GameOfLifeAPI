@@ -10,12 +10,13 @@ namespace GameOfLifeKata.API.Controllers
     [ApiController]
     public class GameOfLifeController : ControllerBase
     {
-        private GameOfLife gameOfLife;
+        private GameOfLife _gameOfLife;
         public GameOfLifeController(GameOfLife gameOfLife)
         {
-            this.gameOfLife = gameOfLife;
+            this._gameOfLife = gameOfLife;
         }
-        
+
+        /*
         /// <summary>
         /// Update the saved instance of the board
         /// </summary>
@@ -24,7 +25,7 @@ namespace GameOfLifeKata.API.Controllers
         [HttpPut]
         public ActionResult Put() {
 
-        }
+        }*/
 
         /// <summary>
         /// Initialize board with an array
@@ -33,12 +34,14 @@ namespace GameOfLifeKata.API.Controllers
         //"api/gameoflife"
         [HttpPost]
         [Consumes("application/json")]
-        [ProducesResponseType(typeof(bool[][]), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public ActionResult Post([FromBody] bool[][] values)
         {
-
+            return null;
         }
-        /*
+
+        
         //method that converts and array in the form of <T>[][] to <T>[,]
         //this is because GameOfLife constructor only accepts arrays in that form
         private bool[,] jaggedTo2d(bool[][] values)
@@ -52,6 +55,6 @@ namespace GameOfLifeKata.API.Controllers
                 }
             }
             return values2d;
-        }*/
+        }
     }
 }
