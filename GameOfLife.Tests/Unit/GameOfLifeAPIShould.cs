@@ -46,5 +46,16 @@ namespace GameOfLifeKata.Tests.Unit
             result.Should().BeOfType<OkResult>();
 
         }
+
+        [Test]
+        public void return_BadRequest_when_post_is_called_with_empty_array()
+        {
+            bool[][] values = new bool[0][];
+
+            var result = controller.Post(values);
+
+            result.Should().BeOfType<BadRequestResult>();
+
+        }
     }
 }
