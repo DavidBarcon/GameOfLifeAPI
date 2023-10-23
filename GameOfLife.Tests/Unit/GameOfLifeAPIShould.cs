@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
+using Newtonsoft.Json.Linq;
 using NSubstitute;
 using NSubstitute.ReceivedExtensions;
 using NUnit.Framework;
@@ -55,6 +56,18 @@ namespace GameOfLifeKata.Tests.Unit
             var result = controller.Post(values);
 
             result.Should().BeOfType<BadRequestResult>();
+
+        }
+
+        [Test]
+        public void return_Ok_when_put_is_called_with_valid_repository()
+        {
+            bool[,] values2d = { { false, false }, { false, true } };
+            boardRepository.Load().Returns(new Board(values2d));
+
+            var result = controller.Put();
+
+            result.Should().BeOfType<OkResult>();
 
         }
     }

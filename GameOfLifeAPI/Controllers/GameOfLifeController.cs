@@ -16,16 +16,17 @@ namespace GameOfLifeKata.API.Controllers
             this._gameOfLife = gameOfLife;
         }
 
-        /*
+        
         /// <summary>
         /// Update the saved instance of the board
         /// </summary>
 
         //"api/gameoflife"
         [HttpPut]
-        public ActionResult Put() {
-
-        }*/
+        public ActionResult Put()
+        {
+            return null;
+        }
 
         /// <summary>
         /// Initialize board with an array
