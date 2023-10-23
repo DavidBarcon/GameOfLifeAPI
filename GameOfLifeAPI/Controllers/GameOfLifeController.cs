@@ -38,7 +38,9 @@ namespace GameOfLifeKata.API.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public ActionResult Post([FromBody] bool[][] values)
         {
-            return null;
+            if (values.Length == 0 || values == null) return BadRequest();
+            _gameOfLife.NewGame(jaggedTo2d(values));
+            return Ok();
         }
 
         
