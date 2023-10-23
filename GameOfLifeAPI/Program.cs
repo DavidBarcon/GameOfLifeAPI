@@ -1,5 +1,7 @@
 using Microsoft.Extensions.PlatformAbstractions;
 using System.Reflection;
+using GameOfLifeKata.Business;
+using GameOfLifeKata.Infrastructure;
 
 namespace GameOfLifeKata.API
 {
@@ -11,6 +13,8 @@ namespace GameOfLifeKata.API
 
             // Add services to the container.
             builder.Services.AddControllers();
+            builder.Services.AddSingleton<GameOfLife>(x => 
+                new GameOfLife(new FileSystemBoardRepository(@"C:\dotNetKataGoL\GameOfLifeAPI\Data.json")));
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen(c => 
             {
