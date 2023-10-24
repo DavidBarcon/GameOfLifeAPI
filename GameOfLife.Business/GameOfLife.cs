@@ -5,6 +5,7 @@
 
         private Board board;
         private readonly BoardRepository boardRepository;
+        private int id;
 
         public GameOfLife(BoardRepository boardRepository)
         {
@@ -13,9 +14,9 @@
 
         public void next()
         {
-            this.board = boardRepository.Load();
+            this.board = boardRepository.Load(this.id);
             board.next();
-            boardRepository.Save(board);
+            boardRepository.Save(board, id);
         }
 
         public bool Equals(GameOfLife game)
@@ -29,10 +30,12 @@
             return board.ToArray();
         }
 
-        public void NewGame(bool[,] values)
+        public int NewGame(bool[,] values)
         {
+            this.id = new Random().Next(1, 100);
             board = new Board(values);
-            boardRepository.Save(board);
+            boardRepository.Save(board, id);
+            return id;
         }
     }
 

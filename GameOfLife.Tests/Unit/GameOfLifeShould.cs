@@ -12,6 +12,8 @@ namespace GameOfLifeKata.Tests.Unit
     {
         private BoardRepository boardRepository;
         private GameOfLife gameOfLife;
+        private string path;
+        private string filePath;
 
         [SetUp]
         public void SetUp()
@@ -43,8 +45,8 @@ namespace GameOfLifeKata.Tests.Unit
 
 
 
-            gameOfLife.NewGame(board);
-            boardRepository.Load().Returns(new Board(board));
+            int id = gameOfLife.NewGame(board);
+            boardRepository.Load(id).Returns(new Board(board));
             gameOfLife.next();
 
             GameOfLife expected = new GameOfLife(boardRepository);
@@ -72,8 +74,8 @@ namespace GameOfLifeKata.Tests.Unit
 
 
 
-            gameOfLife.NewGame(board);
-            boardRepository.Load().Returns(new Board(board));
+            int id = gameOfLife.NewGame(board);
+            boardRepository.Load(id).Returns(new Board(board));
             gameOfLife.next();
 
             GameOfLife expected = new GameOfLife(boardRepository);
@@ -107,8 +109,8 @@ namespace GameOfLifeKata.Tests.Unit
 
 
 
-            gameOfLife.NewGame(board);
-            boardRepository.Load().Returns(new Board(board));
+            int id = gameOfLife.NewGame(board);
+            boardRepository.Load(id).Returns(new Board(board));
             gameOfLife.next();
 
             GameOfLife expected = new GameOfLife(boardRepository);
@@ -138,8 +140,8 @@ namespace GameOfLifeKata.Tests.Unit
 
 
 
-            gameOfLife.NewGame(board);
-            boardRepository.Load().Returns(new Board(board));
+            int id = gameOfLife.NewGame(board);
+            boardRepository.Load(id).Returns(new Board(board));
             gameOfLife.next();
 
             GameOfLife expected = new GameOfLife(boardRepository);
@@ -180,7 +182,7 @@ namespace GameOfLifeKata.Tests.Unit
             gameOfLife.NewGame(values);
 
 
-            boardRepository.Received(1).Save(Arg.Is<Board>(board => board.Equals(new Board(values))));
+            boardRepository.Received(1).Save(Arg.Is<Board>(board => board.Equals(new Board(values))),Arg.Any<int>());
 
         }
 
@@ -195,11 +197,12 @@ namespace GameOfLifeKata.Tests.Unit
                 { false, false, false, false},
             };
 
-            gameOfLife.NewGame(values);
-            boardRepository.Load().Returns(new Board(values));
+
+            int id = gameOfLife.NewGame(values);
+            boardRepository.Load(id).Returns(new Board(values));
             gameOfLife.next();
 
-            boardRepository.Received(2).Save(Arg.Is<Board>(board => board.Equals(new Board(values))));
+            boardRepository.Received(2).Save(Arg.Is<Board>(board => board.Equals(new Board(values))), Arg.Any<int>());
         }
 
         [Test]
@@ -213,11 +216,11 @@ namespace GameOfLifeKata.Tests.Unit
                 { false, false, false, false},
             };
 
-            gameOfLife.NewGame(values);
-            boardRepository.Load().Returns(new Board(values));
+            int id = gameOfLife.NewGame(values);
+            boardRepository.Load(id).Returns(new Board(values));
             gameOfLife.next();
 
-            boardRepository.Received(1).Load();
+            boardRepository.Received(1).Load(id);
         }
     }
 }

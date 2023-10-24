@@ -2,7 +2,7 @@
 {
     public interface BoardRepository
     {
-        void Save(Board board);
-        Board Load();
+        void Save(Board board, int id);
+        Board Load(int id);
     }
 }

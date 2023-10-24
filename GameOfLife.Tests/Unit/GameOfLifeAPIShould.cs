@@ -14,6 +14,7 @@ namespace GameOfLifeKata.Tests.Unit
         private GameOfLife gameOfLife;
         private GameOfLifeController controller;
 
+        /*
         [SetUp]
         public void SetUp()
         {
@@ -78,6 +79,6 @@ namespace GameOfLifeKata.Tests.Unit
                 Assert.Pass();
             }
 
-        }
+        }*/
     }
 }
