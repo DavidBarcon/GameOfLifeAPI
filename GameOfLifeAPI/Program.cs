@@ -14,7 +14,7 @@ namespace GameOfLifeKata.API
             // Add services to the container.
             builder.Services.AddControllers();
             builder.Services.AddSingleton<GameOfLife>(x => 
-                new GameOfLife(new FileSystemBoardRepository(@"C:\dotNetKataGoL\GameOfLifeAPI\Data.json")));
+                new GameOfLife(new FileSystemBoardRepository(@"C:\dotNetKataGoL\GameOfLifeAPI")));
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen(c => 
             {

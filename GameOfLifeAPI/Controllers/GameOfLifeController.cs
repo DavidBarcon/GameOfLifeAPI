@@ -18,32 +18,40 @@ namespace GameOfLifeKata.API.Controllers
 
         
         /// <summary>
-        /// Update the saved instance of the board
+        /// Update the saved instance of the selected game.
         /// </summary>
 
-        //"api/gameoflife"
-        [HttpPut]
+        //"api/gameoflife/5"
+        [HttpPut("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public ActionResult Put()
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public ActionResult Put(int id)
         {
-            _gameOfLife.next();
+            try
+            {
+                _gameOfLife.next(id);
+            }
+            catch (Exception ex)
+            {
+                return NotFound();
+            }
             return Ok();
         }
 
         /// <summary>
-        /// Initialize board with an array
+        /// Initialize a game with an array. If it doesn´t exist, its created.
         /// </summary>
         
         //"api/gameoflife"
         [HttpPost]
         [Consumes("application/json")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public ActionResult Post([FromBody] bool[][] values)
         {
             if (values.Length == 0 || values == null) return BadRequest();
-            _gameOfLife.NewGame(jaggedTo2d(values));
-            return Ok();
+            int id = _gameOfLife.NewGame(jaggedTo2d(values));
+            return Created("Created successful: ",id);
         }
 
         

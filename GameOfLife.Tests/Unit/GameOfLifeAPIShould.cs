@@ -1,8 +1,10 @@
 ﻿using FluentAssertions;
 using GameOfLifeKata.API.Controllers;
 using GameOfLifeKata.Business;
+using Microsoft.AspNetCore.DataProtection.AuthenticatedEncryption.ConfigurationModel;
 using Microsoft.AspNetCore.Mvc;
 using NSubstitute;
+using NSubstitute.ExceptionExtensions;
 using NUnit.Framework;
 
 namespace GameOfLifeKata.Tests.Unit
@@ -14,7 +16,7 @@ namespace GameOfLifeKata.Tests.Unit
         private GameOfLife gameOfLife;
         private GameOfLifeController controller;
 
-        /*
+        
         [SetUp]
         public void SetUp()
         {
@@ -26,7 +28,7 @@ namespace GameOfLifeKata.Tests.Unit
         }
 
         [Test]
-        public void return_OK_when_post_is_called_with_not_empty_array()
+        public void return_Created_when_post_is_called_with_not_empty_array()
         {
             bool[][] values = new bool[2][];
             values[0] = new[] { true, true };
@@ -34,7 +36,7 @@ namespace GameOfLifeKata.Tests.Unit
 
             var result =controller.Post(values);
 
-            result.Should().BeOfType<OkResult>();
+            result.Should().BeOfType<CreatedResult>();
 
         }
 
@@ -53,9 +55,10 @@ namespace GameOfLifeKata.Tests.Unit
         public void return_Ok_when_put_is_called_with_valid_repository()
         {
             bool[,] values2d = { { false, false }, { false, true } };
-            boardRepository.Load().Returns(new Board(values2d));
+            int id = gameOfLife.NewGame(values2d);
+            boardRepository.Load(id).Returns(new Board(values2d));
 
-            var result = controller.Put();
+            var result = controller.Put(id);
 
             result.Should().BeOfType<OkResult>();
 
@@ -71,14 +74,25 @@ namespace GameOfLifeKata.Tests.Unit
 
             try
             {
-                boardRepository.Load().Returns(new Board(values2d));
-                result = controller.Put();
+                int id = gameOfLife.NewGame(values2d);
+
+                boardRepository.Load(id).Returns(new Board(values2d));
+                result = controller.Put(id);
             }
             catch (Exception ex)
             {
                 Assert.Pass();
             }
 
-        }*/
+        }
+
+        [Test]
+        public void return_NotFound_when_put_is_called_with_a_nonexistent_id()
+        {
+            boardRepository.Load(101).Throws(new FileNotFoundException());
+            ActionResult result = controller.Put(101);
+
+            result.Should().BeOfType<NotFoundResult>();
+        }
     }
 }

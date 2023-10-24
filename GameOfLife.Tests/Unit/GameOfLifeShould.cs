@@ -47,7 +47,7 @@ namespace GameOfLifeKata.Tests.Unit
 
             int id = gameOfLife.NewGame(board);
             boardRepository.Load(id).Returns(new Board(board));
-            gameOfLife.next();
+            gameOfLife.next(id);
 
             GameOfLife expected = new GameOfLife(boardRepository);
             expected.NewGame(boardExpected);
@@ -76,7 +76,7 @@ namespace GameOfLifeKata.Tests.Unit
 
             int id = gameOfLife.NewGame(board);
             boardRepository.Load(id).Returns(new Board(board));
-            gameOfLife.next();
+            gameOfLife.next(id);
 
             GameOfLife expected = new GameOfLife(boardRepository);
             expected.NewGame(boardExpected);
@@ -111,7 +111,7 @@ namespace GameOfLifeKata.Tests.Unit
 
             int id = gameOfLife.NewGame(board);
             boardRepository.Load(id).Returns(new Board(board));
-            gameOfLife.next();
+            gameOfLife.next(id);
 
             GameOfLife expected = new GameOfLife(boardRepository);
             expected.NewGame(boardExpected);
@@ -142,7 +142,7 @@ namespace GameOfLifeKata.Tests.Unit
 
             int id = gameOfLife.NewGame(board);
             boardRepository.Load(id).Returns(new Board(board));
-            gameOfLife.next();
+            gameOfLife.next(id);
 
             GameOfLife expected = new GameOfLife(boardRepository);
             expected.NewGame(boardExpected);
@@ -200,7 +200,7 @@ namespace GameOfLifeKata.Tests.Unit
 
             int id = gameOfLife.NewGame(values);
             boardRepository.Load(id).Returns(new Board(values));
-            gameOfLife.next();
+            gameOfLife.next(id);
 
             boardRepository.Received(2).Save(Arg.Is<Board>(board => board.Equals(new Board(values))), Arg.Any<int>());
         }
@@ -218,7 +218,7 @@ namespace GameOfLifeKata.Tests.Unit
 
             int id = gameOfLife.NewGame(values);
             boardRepository.Load(id).Returns(new Board(values));
-            gameOfLife.next();
+            gameOfLife.next(id);
 
             boardRepository.Received(1).Load(id);
         }

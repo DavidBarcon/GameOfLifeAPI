@@ -12,9 +12,9 @@
             this.boardRepository = boardRepository;
         }
 
-        public void next()
+        public void next(int id)
         {
-            this.board = boardRepository.Load(this.id);
+            this.board = boardRepository.Load(id);
             board.next();
             boardRepository.Save(board, id);
         }
