@@ -25,6 +25,11 @@
 
         }
 
+        public int getId()
+        {
+            return this.id;
+        }
+
         public bool[,] ToArray()
         {
             return board.ToArray();
@@ -36,6 +41,30 @@
             board = new Board(values);
             boardRepository.Save(board, id);
             return id;
+        }
+    }
+
+    public class GameOfLifeBuilder
+    {
+        private GameOfLife game;
+        private bool[,] values;
+
+        public GameOfLifeBuilder(GameOfLife gameOfLife, int width, int height)
+        {
+            values = new bool[width, height];
+            this.game = gameOfLife;
+        }
+
+        public GameOfLifeBuilder AddElement(int x, int y )
+        {
+            values[x,y] = true;
+            return this;
+        }
+
+        public GameOfLife build()
+        {
+            game.NewGame(values);
+            return game;
         }
     }
 

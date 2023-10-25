@@ -1,14 +1,16 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using GameOfLifeKata.Business;
+using Asp.Versioning;
 
 namespace GameOfLifeKata.API.Controllers
 {
-    [Route("api/gameoflife")]
+    [ApiVersion("1.0")]
+    [Route("api/v1.0/gameoflife")]
     [ApiController]
-    public class GameOfLifeController : ControllerBase
+    public class GameOfLifeControllerV1 : ControllerBase
     {
         private GameOfLife _gameOfLife;
-        public GameOfLifeController(GameOfLife gameOfLife)
+        public GameOfLifeControllerV1(GameOfLife gameOfLife)
         {
             this._gameOfLife = gameOfLife;
         }
@@ -39,16 +41,17 @@ namespace GameOfLifeKata.API.Controllers
         }
 
         /// <summary>
-        /// Initialize a game with an array. If it doesn´t exist, its created.
+        /// Initialize a game with a 2D array.
+        /// If a board with that id doesn´t exist, its created. 
         /// </summary>
         /// 
         /// <response code="201">Returns the newly created game id</response>
         /// <response code="400">The input values are not valid</response>
         /// 
-        //"api/gameoflife"
+        //"api/v1.0/gameoflife"
         [HttpPost]
         [Consumes("application/json")]
-        [ProducesResponseType(201)]
+        [ProducesResponseType(typeof(int),201)]
         [ProducesResponseType(400)]
         public ActionResult Post([FromBody] bool[][] values)
         {
@@ -57,7 +60,8 @@ namespace GameOfLifeKata.API.Controllers
             return Created(nameof(_gameOfLife),id);
         }
 
-        
+
+
         //method that converts and array in the form of <T>[][] to <T>[,]
         //this is because GameOfLife constructor only accepts arrays in that form
         private bool[,] jaggedTo2d(bool[][] values)

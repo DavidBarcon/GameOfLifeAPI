@@ -10,11 +10,11 @@ using NUnit.Framework;
 namespace GameOfLifeKata.Tests.Unit
 {
     [TestFixture]
-    public class GameOfLifeAPIShould
+    public class GameOfLifeAPIV1Should
     {
         private BoardRepository boardRepository;
         private GameOfLife gameOfLife;
-        private GameOfLifeController controller;
+        private GameOfLifeControllerV1 controller;
 
         
         [SetUp]
@@ -24,7 +24,7 @@ namespace GameOfLifeKata.Tests.Unit
 
             gameOfLife = new GameOfLife(boardRepository);
 
-            controller = new GameOfLifeController(gameOfLife);
+            controller = new GameOfLifeControllerV1(gameOfLife);
         }
 
         [Test]
