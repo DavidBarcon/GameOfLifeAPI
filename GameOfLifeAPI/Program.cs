@@ -33,6 +33,7 @@ namespace GameOfLifeKata.API
                 });
 
             builder.Services.AddProblemDetails();
+            builder.Services.AddHealthChecks();
             builder.Services.AddSwaggerGen(c => 
             {
                 c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo { 
@@ -73,6 +74,7 @@ namespace GameOfLifeKata.API
                 });
             }
 
+            app.MapHealthChecks("/healthz");
 
             app.UseHttpsRedirection();
 
