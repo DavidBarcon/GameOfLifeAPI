@@ -1,10 +1,11 @@
-using GameOfLifeAPI.Models;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
 using Microsoft.Extensions.PlatformAbstractions;
 using System.Reflection;
+using GameOfLifeKata.Business;
+using GameOfLifeKata.Infrastructure;
+using Microsoft.Extensions.Options;
+using Asp.Versioning;
 
-namespace GameOfLifeAPI
+namespace GameOfLifeKata.API
 {
     public class Program
     {
@@ -13,16 +14,37 @@ namespace GameOfLifeAPI
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
-
             builder.Services.AddControllers();
-            // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+            builder.Services.AddScoped<GameOfLife>(x => 
+                new GameOfLife(new FileSystemBoardRepository(@"C:\dotNetKataGoL\GameOfLifeAPI")));
             builder.Services.AddEndpointsApiExplorer();
+            builder.Services.AddApiVersioning(setup =>
+            {
+                setup.ReportApiVersions = true;
+                setup.DefaultApiVersion = new ApiVersion(1, 0);
+                setup.ApiVersionReader = new UrlSegmentApiVersionReader();
+                setup.AssumeDefaultVersionWhenUnspecified = true;
+
+            }).AddMvc()
+                .AddApiExplorer(options =>
+                {
+                    options.GroupNameFormat = "'v'VVV";
+                    options.SubstituteApiVersionInUrl = true;
+                });
+
+            builder.Services.AddProblemDetails();
             builder.Services.AddSwaggerGen(c => 
             {
                 c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo { 
                     Title="Game Of Life",
                     Version="v1",
                     Description= "A game of life API",
+                });
+                c.SwaggerDoc("v2", new Microsoft.OpenApi.Models.OpenApiInfo
+                {
+                    Title = "Game Of Life",
+                    Version = "v2",
+                    Description = "A game of life API",
                 });
 
                 var basePath = PlatformServices.Default.Application.ApplicationBasePath;
@@ -42,14 +64,19 @@ namespace GameOfLifeAPI
                 app.UseSwagger();
                 app.UseSwaggerUI(c =>
                 {
-                    c.SwaggerEndpoint("/swagger/v1/swagger.json", "GameOfLife API v1");
+                    foreach (var description in app.DescribeApiVersions())
+                    {
+                        var url = $"/swagger/{description.GroupName}/swagger.json";
+                        var name = description.GroupName.ToUpperInvariant();
+                        c.SwaggerEndpoint(url, name);
+                    }
                 });
             }
+
 
             app.UseHttpsRedirection();
 
             app.UseAuthorization();
-
 
             app.MapControllers();
 

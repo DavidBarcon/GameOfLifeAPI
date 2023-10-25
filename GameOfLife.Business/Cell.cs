@@ -1,18 +1,18 @@
-﻿namespace GameOfLifeAPI.Models
+﻿namespace GameOfLifeKata.Business
 {
-    enum states
+    public enum states
     {
         alive,
         dead
     }
-    internal class Cell
+    public class Cell
     {
         private states state;
         private int[] position;
 
         public Cell(states isAlive, int[] position)
         {
-            this.state = isAlive;
+            state = isAlive;
             this.position = position;
         }
         public void dead()
@@ -26,7 +26,7 @@
 
         public int[] getPosition()
         {
-            return this.position;
+            return position;
         }
 
         public states getState()
@@ -37,7 +37,7 @@
         public override bool Equals(object obj)
         {
             Cell cell = (Cell)obj;
-            return this.state == cell.state && this.position[0] == cell.position[0] && this.position[1] == cell.position[1];
+            return state == cell.state && position[0] == cell.position[0] && position[1] == cell.position[1];
         }
 
     }

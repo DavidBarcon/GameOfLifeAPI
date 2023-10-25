@@ -1,21 +1,24 @@
-﻿namespace GameOfLifeAPI.Models
+﻿namespace GameOfLifeKata.Business
 {
-    internal class Board
+    public class Board
     {
 
-        List<Cell> board;
-        int sizeX;
-        int sizeY;
+        private List<Cell> board;
+        private int sizeX;
+        private int sizeY;
 
-        Stack<int[]> StackOn = new Stack<int[]>();
-        Stack<int[]> StackOff = new Stack<int[]>();
+        private Stack<int[]> StackOn;
+        private Stack<int[]> StackOff;
 
         //initialize the board with a 2d array
         public Board(bool[,] values)
         {
-            initialize(values);
+            board = Initialize(values);
             sizeX = values.GetLength(0);
             sizeY = values.GetLength(1);
+
+            StackOn = new Stack<int[]>();
+            StackOff = new Stack<int[]>();
 
         }
 
@@ -60,16 +63,16 @@
                 else
                 {
                     values[cell.getPosition()[0], cell.getPosition()[1]] = false;
-                } 
+                }
             }
 
             return values;
         }
 
         //initialize board with a 2d bool array
-        private void initialize(bool[,] bools)
+        private List<Cell> Initialize(bool[,] bools)
         {
-            board = new List<Cell>();
+            var board = new List<Cell>();
 
             for (int x = 0; x < bools.GetLength(0); x++)
             {
@@ -86,13 +89,15 @@
 
                 }
             }
+
+            return board;
         }
 
         public override bool Equals(object obj)
         {
 
             Board boardTemp = (Board)obj;
-            return this.board.SequenceEqual(boardTemp.board);
+            return board.SequenceEqual(boardTemp.board);
 
         }
 
