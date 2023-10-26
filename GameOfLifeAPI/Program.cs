@@ -2,8 +2,11 @@ using Microsoft.Extensions.PlatformAbstractions;
 using System.Reflection;
 using GameOfLifeKata.Business;
 using GameOfLifeKata.Infrastructure;
-using Microsoft.Extensions.Options;
 using Asp.Versioning;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
+using System.Text.Json;
+using System.Text;
 
 namespace GameOfLifeKata.API
 {
@@ -33,7 +36,6 @@ namespace GameOfLifeKata.API
                 });
 
             builder.Services.AddProblemDetails();
-            builder.Services.AddHealthChecks();
             builder.Services.AddSwaggerGen(c => 
             {
                 c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo { 
@@ -57,6 +59,21 @@ namespace GameOfLifeKata.API
 
             });
 
+            builder.Services.AddHealthChecks().AddFolder(options =>
+                {
+                    options.AddFolder(@"C:\dotNetKataGoL\GameOfLifeAPI\Saves");
+                },
+                failureStatus: HealthStatus.Unhealthy,
+                tags: new[] { "files" });
+            builder.Services.AddHealthChecks()
+                .AddTypeActivatedCheck<HealthChecks.FolderPermissionsHealthCheck>(
+                    "Sample Folder permissions check",
+                    failureStatus: HealthStatus.Degraded,
+                    args: new Object[]{ @"C:\dotNetKataGoL\GameOfLifeAPI\Saves"},
+                    tags: new[] { "files" });
+
+
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
@@ -74,7 +91,13 @@ namespace GameOfLifeKata.API
                 });
             }
 
-            app.MapHealthChecks("/healthz");
+            app.MapHealthChecks("/healthz", new HealthCheckOptions
+            {
+                //Predicate = healthCheck => healthCheck.Tags.Contains("sample"),
+                ResultStatusCodes = null,
+                ResponseWriter = WriteResponse,
+            });
+
 
             app.UseHttpsRedirection();
 
@@ -83,6 +106,48 @@ namespace GameOfLifeKata.API
             app.MapControllers();
 
             app.Run();
+        }
+
+        private static Task WriteResponse(HttpContext context, HealthReport healthReport)
+        {
+            context.Response.ContentType = "application/json; charset=utf-8";
+
+            var options = new JsonWriterOptions { Indented = true };
+
+            using var memoryStream = new MemoryStream();
+            using (var jsonWriter = new Utf8JsonWriter(memoryStream, options))
+            {
+                jsonWriter.WriteStartObject();
+                jsonWriter.WriteString("status", healthReport.Status.ToString());
+                jsonWriter.WriteStartObject("results");
+
+                foreach (var healthReportEntry in healthReport.Entries)
+                {
+                    jsonWriter.WriteStartObject(healthReportEntry.Key);
+                    jsonWriter.WriteString("status",
+                        healthReportEntry.Value.Status.ToString());
+                    jsonWriter.WriteString("description",
+                        healthReportEntry.Value.Description);
+                    jsonWriter.WriteStartObject("data");
+
+                    foreach (var item in healthReportEntry.Value.Data)
+                    {
+                        jsonWriter.WritePropertyName(item.Key);
+
+                        JsonSerializer.Serialize(jsonWriter, item.Value,
+                            item.Value?.GetType() ?? typeof(object));
+                    }
+
+                    jsonWriter.WriteEndObject();
+                    jsonWriter.WriteEndObject();
+                }
+
+                jsonWriter.WriteEndObject();
+                jsonWriter.WriteEndObject();
+            }
+
+            return context.Response.WriteAsync(
+                Encoding.UTF8.GetString(memoryStream.ToArray()));
         }
     }
 }
