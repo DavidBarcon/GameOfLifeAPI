@@ -1,9 +1,7 @@
+using FluentAssertions;
 using NUnit.Framework;
 using GameOfLifeKata.Business;
-using FluentAssertions;
 using NSubstitute;
-using GameOfLifeKata.Infrastructure;
-using Newtonsoft.Json.Linq;
 
 namespace GameOfLifeKata.Tests.Unit
 {

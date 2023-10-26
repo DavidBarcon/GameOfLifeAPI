@@ -16,7 +16,7 @@ namespace GameOfLifeKata.API
             // Add services to the container.
             builder.Services.AddControllers();
             builder.Services.AddScoped<GameOfLife>(x => 
-                new GameOfLife(new FileSystemBoardRepository(@"C:\dotNetKataGoL\GameOfLifeAPI")));
+                new GameOfLife(new FileSystemBoardRepository(@"C:\dotNetKataGoL\GameOfLifeAPI\Saves")));
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddApiVersioning(setup =>
             {
