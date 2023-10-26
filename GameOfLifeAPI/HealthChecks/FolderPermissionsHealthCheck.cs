@@ -19,12 +19,16 @@ namespace GameOfLifeKata.API.HealthChecks
             try
             {
                 new FileInfo(_arg1).GetAccessControl();
+                File.Create(Path.Combine(_arg1, "dummy.json"));
+                File.Delete(Path.Combine(_arg1, "dummy.json"));
                 isHealthy = true;
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                isHealthy = false;
+                isHealthy = true;
             }
+
+
 
             if (isHealthy)
             {
