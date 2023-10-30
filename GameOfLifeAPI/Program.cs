@@ -2,8 +2,12 @@ using Microsoft.Extensions.PlatformAbstractions;
 using System.Reflection;
 using GameOfLifeKata.Business;
 using GameOfLifeKata.Infrastructure;
-using Microsoft.Extensions.Options;
 using Asp.Versioning;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
+using System.Text.Json;
+using System.Text;
+using Microsoft.AspNetCore.Mvc.Formatters;
 
 namespace GameOfLifeKata.API
 {
@@ -15,8 +19,9 @@ namespace GameOfLifeKata.API
 
             // Add services to the container.
             builder.Services.AddControllers();
-            builder.Services.AddScoped<GameOfLife>(x => 
-                new GameOfLife(new FileSystemBoardRepository(@"C:\dotNetKataGoL\GameOfLifeAPI")));
+            builder.Services.AddScoped<GameOfLife>();
+            builder.Services.AddScoped<BoardRepository, FileSystemBoardRepository>(x =>
+                new FileSystemBoardRepository(GetPath()));
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddApiVersioning(setup =>
             {
@@ -56,22 +61,43 @@ namespace GameOfLifeKata.API
 
             });
 
+            builder.Services.AddHealthChecks().AddFolder(options =>
+                {
+                    options.AddFolder(GetPath());
+                },
+                "Folder exists",
+                failureStatus: HealthStatus.Unhealthy,
+                tags: new[] { "files" });
+            builder.Services.AddHealthChecks()
+                .AddTypeActivatedCheck<HealthChecks.FolderPermissionsHealthCheck>(
+                    "Folder permissions check",
+                    failureStatus: HealthStatus.Degraded,
+                    args: new Object[]{ GetPath()},
+                    tags: new[] { "files" });
+
+
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
-            if (app.Environment.IsDevelopment())
+            app.UseSwagger();
+            app.UseSwaggerUI(c =>
             {
-                app.UseSwagger();
-                app.UseSwaggerUI(c =>
+                foreach (var description in app.DescribeApiVersions())
                 {
-                    foreach (var description in app.DescribeApiVersions())
-                    {
-                        var url = $"/swagger/{description.GroupName}/swagger.json";
-                        var name = description.GroupName.ToUpperInvariant();
-                        c.SwaggerEndpoint(url, name);
-                    }
-                });
-            }
+                    var url = $"/swagger/{description.GroupName}/swagger.json";
+                    var name = description.GroupName.ToUpperInvariant();
+                    c.SwaggerEndpoint(url, name);
+                }
+            });
+            
+
+            app.MapHealthChecks("/healthz", new HealthCheckOptions
+            {
+                //Predicate = healthCheck => healthCheck.Tags.Contains("sample"),
+                ResultStatusCodes = null,
+                ResponseWriter = WriteResponse,
+            });
 
 
             app.UseHttpsRedirection();
@@ -81,6 +107,59 @@ namespace GameOfLifeKata.API
             app.MapControllers();
 
             app.Run();
+        }
+
+        private static string GetPath()
+        {
+            var path = @"C:\dotNetKataGoL\GameOfLifeAPI\Saves";
+            if (OperatingSystem.IsLinux())
+            {
+                path =  @"/app/Saves";
+            }
+            Directory.CreateDirectory(path);
+            return path;
+        }
+
+        private static Task WriteResponse(HttpContext context, HealthReport healthReport)
+        {
+            context.Response.ContentType = "application/json; charset=utf-8";
+
+            var options = new JsonWriterOptions { Indented = true };
+
+            using var memoryStream = new MemoryStream();
+            using (var jsonWriter = new Utf8JsonWriter(memoryStream, options))
+            {
+                jsonWriter.WriteStartObject();
+                jsonWriter.WriteString("status", healthReport.Status.ToString());
+                jsonWriter.WriteStartObject("results");
+
+                foreach (var healthReportEntry in healthReport.Entries)
+                {
+                    jsonWriter.WriteStartObject(healthReportEntry.Key);
+                    jsonWriter.WriteString("status",
+                        healthReportEntry.Value.Status.ToString());
+                    jsonWriter.WriteString("description",
+                        healthReportEntry.Value.Description);
+                    jsonWriter.WriteStartObject("data");
+
+                    foreach (var item in healthReportEntry.Value.Data)
+                    {
+                        jsonWriter.WritePropertyName(item.Key);
+
+                        JsonSerializer.Serialize(jsonWriter, item.Value,
+                            item.Value?.GetType() ?? typeof(object));
+                    }
+
+                    jsonWriter.WriteEndObject();
+                    jsonWriter.WriteEndObject();
+                }
+
+                jsonWriter.WriteEndObject();
+                jsonWriter.WriteEndObject();
+            }
+
+            return context.Response.WriteAsync(
+                Encoding.UTF8.GetString(memoryStream.ToArray()));
         }
     }
 }

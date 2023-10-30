@@ -25,11 +25,6 @@
 
         }
 
-        public int getId()
-        {
-            return this.id;
-        }
-
         public bool[,] ToArray()
         {
             return board.ToArray();
@@ -44,27 +39,24 @@
         }
     }
 
-    public class GameOfLifeBuilder
+    public class GameofLifeNewGameRequestBuilder
     {
-        private GameOfLife game;
         private bool[,] values;
 
-        public GameOfLifeBuilder(GameOfLife gameOfLife, int width, int height)
+        public GameofLifeNewGameRequestBuilder(int width, int height)
         {
             values = new bool[width, height];
-            this.game = gameOfLife;
         }
 
-        public GameOfLifeBuilder AddElement(int x, int y )
+        public GameofLifeNewGameRequestBuilder AddElement(int x, int y )
         {
             values[x,y] = true;
             return this;
         }
 
-        public GameOfLife build()
+        public bool[,] build()
         {
-            game.NewGame(values);
-            return game;
+            return values;
         }
     }
 
