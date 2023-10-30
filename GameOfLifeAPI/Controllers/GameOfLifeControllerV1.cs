@@ -4,9 +4,9 @@ using Asp.Versioning;
 
 namespace GameOfLifeKata.API.Controllers
 {
-    [ApiVersion("1.0")]
-    [Route("api/v1.0/gameoflife")]
     [ApiController]
+    [ApiVersion("1.0")]
+    [Route("api/v{version:apiVersion}/gameoflife")]
     public class GameOfLifeControllerV1 : ControllerBase
     {
         private GameOfLife _gameOfLife;

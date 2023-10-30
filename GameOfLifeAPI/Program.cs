@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using System.Text.Json;
 using System.Text;
+using Microsoft.AspNetCore.Mvc.Formatters;
 
 namespace GameOfLifeKata.API
 {
@@ -18,8 +19,9 @@ namespace GameOfLifeKata.API
 
             // Add services to the container.
             builder.Services.AddControllers();
-            builder.Services.AddScoped<GameOfLife>(x => 
-                new GameOfLife(new FileSystemBoardRepository(@"C:\dotNetKataGoL\GameOfLifeAPI\Saves")));
+            builder.Services.AddScoped<GameOfLife>();
+            builder.Services.AddScoped<BoardRepository, FileSystemBoardRepository>(x =>
+                new FileSystemBoardRepository(GetPath()));
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddApiVersioning(setup =>
             {
@@ -61,15 +63,16 @@ namespace GameOfLifeKata.API
 
             builder.Services.AddHealthChecks().AddFolder(options =>
                 {
-                    options.AddFolder(@"C:\dotNetKataGoL\GameOfLifeAPI\Saves");
+                    options.AddFolder(GetPath());
                 },
+                "Folder exists",
                 failureStatus: HealthStatus.Unhealthy,
                 tags: new[] { "files" });
             builder.Services.AddHealthChecks()
                 .AddTypeActivatedCheck<HealthChecks.FolderPermissionsHealthCheck>(
-                    "Sample Folder permissions check",
+                    "Folder permissions check",
                     failureStatus: HealthStatus.Degraded,
-                    args: new Object[]{ @"C:\dotNetKataGoL\GameOfLifeAPI\Saves"},
+                    args: new Object[]{ GetPath()},
                     tags: new[] { "files" });
 
 
@@ -77,19 +80,17 @@ namespace GameOfLifeKata.API
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
-            if (app.Environment.IsDevelopment())
+            app.UseSwagger();
+            app.UseSwaggerUI(c =>
             {
-                app.UseSwagger();
-                app.UseSwaggerUI(c =>
+                foreach (var description in app.DescribeApiVersions())
                 {
-                    foreach (var description in app.DescribeApiVersions())
-                    {
-                        var url = $"/swagger/{description.GroupName}/swagger.json";
-                        var name = description.GroupName.ToUpperInvariant();
-                        c.SwaggerEndpoint(url, name);
-                    }
-                });
-            }
+                    var url = $"/swagger/{description.GroupName}/swagger.json";
+                    var name = description.GroupName.ToUpperInvariant();
+                    c.SwaggerEndpoint(url, name);
+                }
+            });
+            
 
             app.MapHealthChecks("/healthz", new HealthCheckOptions
             {
@@ -106,6 +107,17 @@ namespace GameOfLifeKata.API
             app.MapControllers();
 
             app.Run();
+        }
+
+        private static string GetPath()
+        {
+            var path = @"C:\dotNetKataGoL\GameOfLifeAPI\Saves";
+            if (OperatingSystem.IsLinux())
+            {
+                path =  @"/app/Saves";
+            }
+            Directory.CreateDirectory(path);
+            return path;
         }
 
         private static Task WriteResponse(HttpContext context, HealthReport healthReport)

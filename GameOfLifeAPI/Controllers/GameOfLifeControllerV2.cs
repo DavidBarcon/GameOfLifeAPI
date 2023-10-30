@@ -4,9 +4,9 @@ using Asp.Versioning;
 
 namespace GameOfLifeKata.API.Controllers
 {
-    [ApiVersion("2.0")]
-    [Route("api/v2.0/gameoflife")]
     [ApiController]
+    [ApiVersion("2.0")]
+    [Route("api/v{version:apiVersion}/gameoflife")]
     public class GameOfLifeControllerV2 : ControllerBase
     {
         private GameOfLife _gameOfLife;
@@ -23,9 +23,8 @@ namespace GameOfLifeKata.API.Controllers
         /// <response code="200">The game was found and successfully updated</response>
         /// <response code="404">The game was not found</response>
         /// 
-        //"api/gameoflife/5"
+        //"api/v2.0/gameoflife/5"
         [HttpPut("{id}")]
-        [MapToApiVersion("2.0")]
         [ProducesResponseType(200)]
         [ProducesResponseType(404)]
         public ActionResult Put(int id)
@@ -51,9 +50,8 @@ namespace GameOfLifeKata.API.Controllers
         /// <response code="201">Returns the newly created game id</response>
         /// <response code="400">The input values are not valid</response>
         /// 
-        //"api/v2/gameoflife"
+        //"api/v2.0/gameoflife"
         [HttpPost]
-        [MapToApiVersion("2.0")]
         [Consumes("application/json")]
         [ProducesResponseType(typeof(int), 201)]
         [ProducesResponseType(400)]
@@ -61,14 +59,15 @@ namespace GameOfLifeKata.API.Controllers
         {
             if(values.Length % 2 != 0 || values.Length < 2) return BadRequest();
 
-            GameOfLifeBuilder builder = new GameOfLifeBuilder(_gameOfLife, values[0], values[1]);
+            GameofLifeNewGameRequestBuilder builder = new GameofLifeNewGameRequestBuilder(values[0], values[1]);
             for (int i = 2; i < values.Length; i += 2)
             {
                 builder.AddElement(values[i], values[i + 1]);
             }
 
-            _gameOfLife = builder.build();
-            int id = _gameOfLife.getId();
+
+            bool[,] boardValues = builder.build();
+            int id = _gameOfLife.NewGame(boardValues);
 
             return Created(nameof(_gameOfLife), id);
         }
