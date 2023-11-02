@@ -12,16 +12,30 @@ FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
 WORKDIR /src
 COPY ["../GameOfLifeAPI/GameOfLifeKata.API.csproj", "GameOfLifeAPI/"]
 COPY ["../GameOfLife.Business/GameOfLifeKata.Business.csproj", "GameOfLife.Business/"]
-COPY ["../GameOfLifeKata.Infrastructure/GameOfLifeKata.Infrastructure.csproj", "GameOfLifeKata.Infrastructure/"]
+COPY ["../GameOfLifeKata.Infrastructure/GameOfLifeKata.Infrastructure.csproj", "GameOfLife.Infrastructure/"]
 RUN dotnet restore "GameOfLifeAPI/GameOfLifeKata.API.csproj"
 COPY . .
 WORKDIR "/src/GameOfLifeAPI"
 RUN dotnet build "GameOfLifeKata.API.csproj" -c Release -o /app/build
 
+#FROM build AS Test
+WORKDIR /src
+COPY ["../GameOfLife.Tests/GameOfLifeKata.API.Tests.csproj", "GameOfLifeAPI.Tests/"]
+COPY ["../GameOfLifeKata.Business.Tests/GameOfLifeKata.Business.Tests.csproj", "GameOfLife.Business.Tests/"]
+COPY ["../GameOfLifeKata.Infrastructure.Tests/GameOfLifeKata.Infrastructure.Tests.csproj", "GameOfLife.Infrastructure.Tests/"]
+RUN dotnet restore "./GameOfLifeAPI.Tests/GameOfLifeKata.API.Tests.csproj"
+RUN dotnet restore "./GameOfLife.Business.Tests/GameOfLifeKata.Business.Tests.csproj"
+RUN dotnet restore "./GameOfLife.Infrastructure.Tests/GameOfLifeKata.Infrastructure.Tests.csproj"
+RUN dotnet test
+
+
+
 FROM build AS publish
+WORKDIR "/src/GameOfLifeAPI"
 RUN dotnet publish "GameOfLifeKata.API.csproj" -c Release -o /app/publish /p:UseAppHost=false
 
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
+
 ENTRYPOINT ["dotnet", "GameOfLifeKata.API.dll"]
