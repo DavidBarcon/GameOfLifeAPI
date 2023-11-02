@@ -59,3 +59,4 @@ steps:
     command: 'publish'
     publishWebProjects: true
     arguments: '--configuration $(BuildConfiguration)'
+    zipAfterPublish: True
