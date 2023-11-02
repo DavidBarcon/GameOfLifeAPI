@@ -36,6 +36,9 @@ steps:
 - task: DotNetCoreCLI@2
   inputs:
     command: 'build'
-    projects: '*/GameOfLifeAPI/GameOfLifeKata.API.csproj'
+    projects: '**/GameOfLifeAPI/GameOfLifeKata.API.csproj'
     arguments: '--configuration $(buildConfiguration)'
 
+- task: DotNetCoreCLI@2
+  inputs:
+    command: 'test'
