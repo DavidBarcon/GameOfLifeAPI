@@ -64,6 +64,18 @@ steps:
   inputs:
     targetPath: '$(Build.ArtifactStagingDirectory)' 
     artifactName: 'GameOfLife'
+
+- task: Docker@2
+  inputs:
+    containerRegistry: 'davidbarconDockerHub'
+    command: 'login'
+    
+- task: Docker@2
+  inputs:
+    containerRegistry: 'davidbarconDockerHub'
+    repository: 'gameOfLifeImage'
+    command: 'buildAndPush'
+    Dockerfile: '**/Dockerfile'
     
     
 
