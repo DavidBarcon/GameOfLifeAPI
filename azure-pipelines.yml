@@ -27,25 +27,23 @@ steps:
   displayName: 'dotnet restore'
   inputs:
     command: 'restore'
-    projects: |
-      **/GameOfLifeAPI.Tests/GameOfLifeKata.API.Tests.csproj
-      **/GameOfLife.Business.Tests/GameOfLifeKata.Business.Tests.csproj
-      **/GameOfLife.Infrastructure.Tests/GameOfLifeKata.Infrastructure.Tests.csproj
-      **/GameOfLifeAPI/GameOfLifeKata.API.csproj
+    projects: $(solution)
     feedsToUse: 'select'
+    arguments: 
 
 - task: DotNetCoreCLI@2
   displayName: 'dotnet build'
   inputs:
     command: 'build'
-    projects: '**/GameOfLifeAPI/GameOfLifeKata.API.csproj'
-    arguments: '--configuration $(buildConfiguration)'
+    projects: $(solution)
+    arguments: '--no-restore'
 
 - task: DotNetCoreCLI@2
   displayName: 'dotnet test'
   inputs:
     command: 'test'
-    arguments: '--collect "Code coverage"'
+    projects: $(solution)
+    arguments: '--collect "Code coverage" --no-restore --no-build'
 
 - task: PublishCodeCoverageResults@1
   displayName: 'Publish code coverage report'
