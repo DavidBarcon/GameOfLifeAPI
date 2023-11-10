@@ -99,6 +99,7 @@ namespace GameOfLifeKata.API
                 ResponseWriter = WriteResponse,
             });
 
+            app.UseHealthChecksPrometheusExporter("/healthmetrics");
 
             app.UseHttpsRedirection();
 
